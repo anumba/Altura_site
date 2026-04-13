@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services | Altura Tech</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='16' fill='%230D0F14'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%233B82F6'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    :root {
+      --bg-base: #0D0F14;
+      --bg-elevated: #13161D;
+      --bg-card: #161921;
+      --blue: #3B82F6;
+      --blue-dark: #2563EB;
+      --purple: #8B5CF6;
+      --text-primary: #F0F2F5;
+      --text-secondary: #9CA3AF;
+      --text-muted: #6B7280;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(59,130,246,0.35);
+      --sans: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: var(--sans);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    
+    body.menu-open,
+    body.modal-open {
+      overflow: hidden;
+    }
+    
+    a { text-decoration: none; color: inherit; }
+    
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    section {
+      margin: 0 40px 40px 40px;
+      padding: 7rem 0;
+      position: relative;
+      background: var(--bg-base);
+      border-radius: 12px;
+    }
+    
+    section:first-of-type {
+      margin-top: 0;
+    }
+    
+    @media (max-width: 768px) {
+      section {
+        margin: 0 20px 30px 20px;
+        padding: 5rem 0;
+      }
+    }
+    
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      padding: 1.5rem 0;
+      transition: background 0.3s, padding 0.3s;
+    }
+    
+    .header.scrolled {
+      background: rgba(13,15,20,0.95);
+      backdrop-filter: blur(12px);
+      padding: 1rem 0;
+      box-shadow: 0 1px 0 var(--border);
+    }
+    
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 3rem;
+    }
+    
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    
+    .logo span { color: var(--blue); }
+    
+    .nav-desktop {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+    }
+    
+    .nav-link {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+      text-decoration: none;
+    }
+    
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--text-primary);
+    }
+    
+    .nav-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+    }
+    
+    .nav-overlay.open {
+      display: block;
+    }
+    
+    .nav-mobile {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 280px;
+      z-index: 1001;
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border);
+      padding: 5rem 2rem 2rem;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+      display: none;
+    }
+    
+    .nav-mobile.open {
+      transform: translateX(0);
+    }
+    
+    .nav-mobile .nav-link {
+      display: block;
+      padding: 0.75rem 0;
+      font-size: 1.1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .nav-mobile .btn {
+      margin-top: 1rem;
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      z-index: 1002;
+    }
+    
+    .menu-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-primary);
+      transition: all 0.25s;
+    }
+    
+    .menu-toggle.open span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    
+    .menu-toggle.open span:nth-child(2) {
+      opacity: 0;
+    }
+    
+    .menu-toggle.open span:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+    
+    @media (max-width: 768px) {
+      .nav-desktop { display: none; }
+      .menu-toggle { display: flex; }
+      .nav-mobile { display: flex; flex-direction: column; }
+      .header-inner { padding: 0 2rem; }
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+    
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.15);
+    }
+    
+    .btn-primary:hover {
+      background: var(--blue-dark);
+      box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+      transform: translateY(-2px);
+    }
+    
+    .page-header {
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+      padding: 10rem 0 5rem;
+      background: linear-gradient(180deg, var(--bg-base) 0%, #0F1318 100%);
+      position: relative;
+      overflow: hidden;
+      margin: 0;
+      border-radius: 0;
+    }
+    
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(59,130,246,0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    
+    .page-header-content {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    .page-header h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+    
+    .page-header p {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    
+    .service-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 3rem;
+      margin-bottom: 2rem;
+    }
+    
+    .service-block h2 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .service-block .subtitle {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+    }
+    
+    .service-section {
+      margin-bottom: 2.5rem;
+    }
+    
+    .service-section:last-child {
+      margin-bottom: 0;
+    }
+    
+    .service-section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+    
+    .service-section ul {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+    
+    .service-section li {
+      padding: 0.5rem 0 0.5rem 1.5rem;
+      position: relative;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    
+    .service-section li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--blue);
+    }
+    
+    .footer {
+      background: var(--bg-elevated);
+      border-top: 1px solid var(--border);
+      padding: 4rem 0 2rem;
+      margin: 0;
+      border-radius: 0;
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      margin-bottom: 3rem;
+    }
+    
+    .footer-brand p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-top: 0.75rem;
+      line-height: 1.65;
+      max-width: 280px;
+    }
+    
+    .footer-col h5 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+    
+    .footer-col a {
+      display: block;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.65rem;
+      transition: color 0.2s;
+    }
+    
+    .footer-col a:hover {
+      color: var(--text-primary);
+    }
+    
+    .footer-bottom {
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+      .footer-brand {
+        grid-column: span 2;
+      }
+      .footer-bottom {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-brand {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <nav class="nav-mobile" id="navMobile">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="services.html" class="nav-link active">Services</a>
+    <a href="projects.html" class="nav-link">Projects</a>
+    <a href="about.html" class="nav-link">About</a>
+    <a href="contact.html" class="nav-link">Contact</a>
+    <a href="contact.html" class="btn btn-primary">Get Started</a>
+  </nav>
+
+  <header class="header" id="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">Altura<span>.</span></a>
+      <nav class="nav-desktop">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="services.html" class="nav-link active">Services</a>
+        <a href="projects.html" class="nav-link">Projects</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+        <a href="contact.html" class="btn btn-primary">Get Started</a>
+      </nav>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container">
+      <div class="page-header-content">
+        <h1>Services</h1>
+        <p>Three interconnected capabilities designed to build and maintain reliable digital systems for organizations.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="software">
+    <div class="container">
+      <div class="service-block">
+        <h2>Custom Software Development</h2>
+        <p class="subtitle">We engineer web applications, business systems, and automation tools that solve specific operational challenges. Every project starts with understanding the problem, not jumping to solutions.</p>
+        <div class="service-section">
+          <h3>What We Build</h3>
+          <ul>
+            <li>Internal business platforms for operations, workflow management, and data processing</li>
+            <li>Customer-facing web applications with authentication, payments, and database architecture</li>
+            <li>Administrative dashboards for reporting, analytics, and system management</li>
+            <li>Automation systems that reduce manual work and eliminate repetitive tasks</li>
+            <li>API integrations connecting your systems with third-party services</li>
+          </ul>
+        </div>
+        <div class="service-section">
+          <h3>Outcomes You Can Expect</h3>
+          <ul>
+            <li>Systems that solve the problem as defined, with clear success metrics</li>
+            <li>Clean, maintainable code that your team can work with long-term</li>
+            <li>Documented architecture and technical decisions for future reference</li>
+            <li>Performance benchmarks met from day one of deployment</li>
+            <li>Security practices implemented as foundational requirements, not afterthoughts</li>
+          </ul>
+        </div>
+        <div style="margin-top: 2rem;">
+          <a href="contact.html" class="btn btn-primary">Discuss Your Project</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="infrastructure" style="background: var(--bg-elevated);">
+    <div class="container">
+      <div class="service-block">
+        <h2>Digital Presence & Infrastructure</h2>
+        <p class="subtitle">We build corporate websites, school portals, and complete digital foundations. This isn't just design work—it's technical infrastructure that represents your organization reliably.</p>
+        <div class="service-section">
+          <h3>What We Build</h3>
+          <ul>
+            <li>Corporate websites with proper information architecture and content management</li>
+            <li>School portals connecting administrators, teachers, students, and parents</li>
+            <li>Complete digital setup: domain registration, business email, DNS configuration, hosting</li>
+            <li>Content management systems that non-technical staff can update safely</li>
+            <li>Mobile-responsive design that works across all devices and screen sizes</li>
+          </ul>
+        </div>
+        <div class="service-section">
+          <h3>Outcomes You Can Expect</h3>
+          <ul>
+            <li>A digital presence that loads fast, works reliably, and represents your brand accurately</li>
+            <li>SSL certificates, security headers, and proper access controls configured correctly</li>
+            <li>Analytics and monitoring in place to understand how your site is performing</li>
+            <li>Documentation so your team understands how to manage the system</li>
+            <li>Clear ownership of all domains, hosting, and technical assets</li>
+          </ul>
+        </div>
+        <div style="margin-top: 2rem;">
+          <a href="contact.html" class="btn btn-primary">Start Your Digital Presence</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="maintenance">
+    <div class="container">
+      <div class="service-block">
+        <h2>Maintenance & Support</h2>
+        <p class="subtitle">Software requires ongoing attention. We provide structured maintenance plans that keep your systems current, secure, and performing well without requiring constant attention from your team.</p>
+        <div class="service-section">
+          <h3>What We Provide</h3>
+          <ul>
+            <li>Regular updates to frameworks, dependencies, and security patches</li>
+            <li>Bug resolution with defined response times based on severity</li>
+            <li>Performance monitoring and optimization to maintain speed</li>
+            <li>Backup verification and disaster recovery planning</li>
+            <li>Technical support via email with clear escalation paths</li>
+          </ul>
+        </div>
+        <div class="service-section">
+          <h3>Outcomes You Can Expect</h3>
+          <ul>
+            <li>Systems stay up to date without you having to track technical changes</li>
+            <li>Issues get resolved quickly with transparent communication about status</li>
+            <li>Monthly reports showing what was done and system health metrics</li>
+            <li>Predictable costs—no surprise invoices for routine maintenance</li>
+            <li>A reliable partner who understands your system's history and architecture</li>
+          </ul>
+        </div>
+        <div style="margin-top: 2rem;">
+          <a href="contact.html" class="btn btn-primary">Get a Maintenance Quote</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="text-align: center; padding: 6rem 0;">
+    <div class="container">
+      <h2 style="font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 600; margin-bottom: 1rem;">Not Sure Which Service Fits?</h2>
+      <p style="font-size: 1.05rem; color: var(--text-secondary); max-width: 540px; margin: 0 auto 2.5rem; line-height: 1.7;">Schedule a consultation. We'll discuss your requirements and recommend the right approach.</p>
+      <a href="contact.html" class="btn btn-primary" style="padding: 1rem 2.5rem; font-size: 1rem;">Schedule Consultation</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">Altura<span>.</span></div>
+          <p>Engineering digital systems that move organizations forward.</p>
+        </div>
+        <div class="footer-col">
+          <h5>Navigation</h5>
+          <a href="index.html">Home</a>
+          <a href="services.html">Services</a>
+          <a href="about.html">About</a>
+          <a href="projects.html">Projects</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h5>Services</h5>
+          <a href="services.html#software">Custom Software</a>
+          <a href="services.html#infrastructure">Digital Infrastructure</a>
+          <a href="services.html#maintenance">Maintenance & Support</a>
+        </div>
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <a href="mailto:hello@alturatech.tech">hello@alturatech.tech</a>
+          <a href="contact.html">Schedule Consultation</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Altura Tech. All rights reserved.</span>
+        <span>Engineering partner for serious digital products.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
+
+    const menuToggle = document.getElementById('menuToggle');
+    const navMobile = document.getElementById('navMobile');
+    const navOverlay = document.getElementById('navOverlay');
+
+    function openMenu() {
+      navMobile.classList.add('open');
+      navOverlay.classList.add('open');
+      menuToggle.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      document.body.classList.add('menu-open');
+    }
+
+    function closeMenu() {
+      navMobile.classList.remove('open');
+      navOverlay.classList.remove('open');
+      menuToggle.classList.remove('open');
+      document.body.style.overflow = '';
+      document.body.classList.remove('menu-open');
+    }
+
+    menuToggle.addEventListener('click', () => {
+      if (navMobile.classList.contains('open')) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    navOverlay.addEventListener('click', closeMenu);
+
+    navMobile.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMenu);
+    });
+  </script>
+
+</body>
+</html>
